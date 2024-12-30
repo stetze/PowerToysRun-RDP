@@ -24,12 +24,12 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
     }
   ];
   private bool _disposed;
-  private string _icon;
-  private PluginInitContext _context;
-  private RDPConnections _rdpConnections;
-  private RDPConnections _predefinedConnections;
-  private RDPConnectionsStore _store;
-  private SearchPhraseProvider _searchPhraseProvider;
+  private string? _icon;
+  private PluginInitContext? _context;
+  private RDPConnections? _rdpConnections;
+  private RDPConnections? _predefinedConnections;
+  private RDPConnectionsStore? _store;
+  private SearchPhraseProvider? _searchPhraseProvider;
 
   /// <summary>
   /// initialize the plugin.
@@ -43,7 +43,7 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
         "data",
         "connections.txt"));
     _rdpConnections = _store.Load();
-    _searchPhraseProvider = new SearchPhraseProvider();
+    _searchPhraseProvider = new SearchPhraseProvider { Search = string.Empty };
     _context.API.ThemeChanged += OnThemeChanged;
     UpdateIconPath(_context.API.GetCurrentTheme());
   }
@@ -65,11 +65,14 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
   /// <returns></returns>
   public List<Result> Query(Query query)
   {
-    _searchPhraseProvider.Search = query.Search;
-    _rdpConnections.Reload(GetRdpConnectionsFromRegistry());
+    if (_searchPhraseProvider != null)
+    {
+      _searchPhraseProvider.Search = query.Search;
+    }
+    _rdpConnections?.Reload(GetRdpConnectionsFromRegistry());
 
-    var connections = _rdpConnections.FindConnections(query.Search);
-    var predefinedConnections = _predefinedConnections.FindConnections(query.Search);
+    var connections = _rdpConnections?.FindConnections(query.Search) ?? Enumerable.Empty<(string connection, int score)>();
+    var predefinedConnections = _predefinedConnections?.FindConnections(query.Search) ?? Enumerable.Empty<(string connection, int score)>();
     var results = Array.Empty<Result>()
         .Union(predefinedConnections.Select(MapToResult))
         .Union(connections.Select(MapToResult))
@@ -86,7 +89,8 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
     return results;
   }
 
-  private static IReadOnlyCollection<string> GetRdpConnectionsFromRegistry()
+  // private static IReadOnlyCollection<string> GetRdpConnectionsFromRegistry()
+  private static string[] GetRdpConnectionsFromRegistry()
   {
     var key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Terminal Server Client\Default");
     if (key is null)
@@ -94,7 +98,7 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
       return [];
     }
 
-    return key.GetValueNames().Select(x => key.GetValue(x.Trim()).ToString()).ToArray();
+    return key.GetValueNames().Select(x => key.GetValue(x.Trim())?.ToString()).Where(value => value != null).Cast<string>().ToArray();
   }
 
   private Result MapToResult((string connection, int score) item) =>
@@ -107,8 +111,11 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
         Score = item.score,
         Action = c =>
           {
-            _rdpConnections.ConnectionWasSelected(item.connection);
-            _store.Save(_rdpConnections);
+            _rdpConnections?.ConnectionWasSelected(item.connection);
+            if (_rdpConnections != null)
+            {
+              _store?.Save(_rdpConnections);
+            }
 
             StartMstsc(item.connection);
             return true;
@@ -124,7 +131,10 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
         Score = 100,
         Action = c =>
           {
-            StartMstsc(_searchPhraseProvider.Search);
+            if (_searchPhraseProvider != null)
+            {
+              StartMstsc(_searchPhraseProvider.Search);
+            }
             return true;
           }
       };
@@ -148,7 +158,7 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
   /// </summary>
   private class SearchPhraseProvider
   {
-    public string Search { get; set; }
+    public required string Search { get; set; }
   }
 
   public void ReloadData()
@@ -180,6 +190,6 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
 
   public void UpdateSettings(PowerLauncherPluginSettings settings)
   {
-    _predefinedConnections = RDPConnections.Create(settings?.AdditionalOptions?.FirstOrDefault(x => x.Key == "predefinedConnections")?.TextValueAsMultilineList);
+    _predefinedConnections = RDPConnections.Create(settings?.AdditionalOptions?.FirstOrDefault(x => x.Key == "predefinedConnections")?.TextValueAsMultilineList ?? Enumerable.Empty<string>());
   }
 }

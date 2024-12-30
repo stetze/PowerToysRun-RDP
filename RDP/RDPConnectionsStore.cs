@@ -1,16 +1,10 @@
-using System.Collections.Generic;
 using System.IO;
 
 namespace Community.PowerToys.Run.Plugin.RDP;
 
-internal class RDPConnectionsStore
+internal class RDPConnectionsStore(string storageFile)
 {
-  private readonly string _storageFile;
-
-  public RDPConnectionsStore(string storageFile)
-  {
-    _storageFile = storageFile;
-  }
+  private readonly string _storageFile = storageFile;
 
   public RDPConnections Load()
   {

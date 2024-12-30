@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-      <TargetFramework>net8.0-windows</TargetFramework>
+      <TargetFramework>net9.0-windows</TargetFramework>
       <useWPF>true</useWPF>
       <ImplicitUsings>enable</ImplicitUsings>
       <Nullable>enable</Nullable>
       <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
       <AssemblyName>Community.PowerToys.Run.Plugin.RDP</AssemblyName>
       <RootNamespace>Community.PowerToys.Run.Plugin.RDP</RootNamespace>
-      <Version>$([System.Text.RegularExpressions.Regex]::Match([System.IO.File]::ReadAllText('.\plugin.json'), '"Version": "(\S+)"').Groups[1].Value)</Version>
+      <Version>1.0.6</Version>
       <Platforms>x64;ARM64</Platforms>
       <Title>Powertoys Run RDP</Title>
       <Product>Powertoys Run RDP Plugin</Product>
