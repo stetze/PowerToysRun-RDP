@@ -6,7 +6,7 @@ internal class RDPConnections
 
   private RDPConnections(IEnumerable<string> connections)
   {
-    _connections = connections.ToList();
+    _connections = [.. connections];
   }
 
   public static RDPConnections Create(IEnumerable<string> connections) => new(connections);
