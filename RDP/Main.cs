@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.IO;
 using System.Windows.Controls;
 using Microsoft.Win32;
 using Microsoft.PowerToys.Settings.UI.Library;
@@ -28,7 +27,6 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
   private PluginInitContext? _context;
   private RDPConnections? _rdpConnections;
   private RDPConnections? _predefinedConnections;
-  private RDPConnectionsStore? _store;
   private SearchPhraseProvider? _searchPhraseProvider;
 
   /// <summary>
@@ -38,11 +36,7 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
   public void Init(PluginInitContext context)
   {
     _context = context;
-    _store = new RDPConnectionsStore(Path.Combine(
-        context.CurrentPluginMetadata.PluginDirectory,
-        "data",
-        "connections.txt"));
-    _rdpConnections = _store.Load();
+    _rdpConnections = _predefinedConnections;
     _searchPhraseProvider = new SearchPhraseProvider { Search = string.Empty };
     _context.API.ThemeChanged += OnThemeChanged;
     UpdateIconPath(_context.API.GetCurrentTheme());
@@ -112,10 +106,6 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
         Action = c =>
           {
             _rdpConnections?.ConnectionWasSelected(item.connection);
-            if (_rdpConnections != null)
-            {
-              _store?.Save(_rdpConnections);
-            }
 
             StartMstsc(item.connection);
             return true;
