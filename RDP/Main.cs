@@ -98,7 +98,7 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
       return [];
     }
 
-    return key.GetValueNames().Select(x => key.GetValue(x.Trim())?.ToString()).Where(value => value != null).Cast<string>().ToArray();
+    return [.. key.GetValueNames().Select(x => key.GetValue(x.Trim())?.ToString()).Where(value => value != null).Cast<string>()];
   }
 
   private Result MapToResult((string connection, int score) item) =>
@@ -144,6 +144,10 @@ public class Main : IPlugin, ISettingProvider, IReloadable, IDisposable
     if (string.IsNullOrWhiteSpace(connection))
     {
       Process.Start("mstsc");
+    }
+    else if (connection.Contains(".rdp") || connection.Contains(".RDP"))
+    {
+      Process.Start("mstsc", connection);
     }
     else
     {

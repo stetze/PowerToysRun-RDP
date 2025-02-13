@@ -7,7 +7,7 @@
       <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
       <AssemblyName>Community.PowerToys.Run.Plugin.RDP</AssemblyName>
       <RootNamespace>Community.PowerToys.Run.Plugin.RDP</RootNamespace>
-      <Version>1.0.6</Version>
+      <Version>1.0.7</Version>
       <Platforms>x64;ARM64</Platforms>
       <Title>Powertoys Run RDP</Title>
       <Product>Powertoys Run RDP Plugin</Product>
