@@ -11,7 +11,7 @@
       <Platforms>x64;ARM64</Platforms>
       <Title>Powertoys Run RDP</Title>
       <Product>Powertoys Run RDP Plugin</Product>
-      <Authors>stetze</Authors>
+      <Authors>stetze, forked from anthony81799</Authors>
       <RepositoryUrl>https://github.com/stetze/PowerToysRun-RDP</RepositoryUrl>
   </PropertyGroup>
 
