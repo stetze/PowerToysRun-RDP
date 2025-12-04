@@ -11,8 +11,8 @@
       <Platforms>x64;ARM64</Platforms>
       <Title>Powertoys Run RDP</Title>
       <Product>Powertoys Run RDP Plugin</Product>
-      <Authors>anthony81799</Authors>
-      <RepositoryUrl>https://github.com/anthony81799/PowerToysRun-RDP</RepositoryUrl>
+      <Authors>stetze</Authors>
+      <RepositoryUrl>https://github.com/stetze/PowerToysRun-RDP</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -47,4 +47,19 @@
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
   </ItemGroup>
+
+  <!-- Create locale folders (e.g. de-DE, fr-FR, ...) in the build output and copy the built assembly into each -->
+  <ItemGroup>
+    <!-- List of locales to create. Add or remove locales as needed -->
+    <Locale Include="ar-SA;cs-CZ;de-DE;es-ES;fa-IR;fr-FR;he-IL;hu-HU;it-IT;ja-JP;ko-KR;nl-NL;pl-PL;pt-BR;pt-PT;ru-RU;sv-SE;tr-TR;uk-UA;zh-CN;zh-TW" />
+  </ItemGroup>
+  
+  <Target Name="CreateLocaleFolders" AfterTargets="Build">
+    <Message Importance="low" Text="Creating locale folders and copying assembly for $(AssemblyName)" />
+    <ItemGroup>
+      <LocaleDirs Include="@(Locale->'$(TargetDir)%(Identity)')" />
+    </ItemGroup>
+    <MakeDir Directories="@(LocaleDirs)" Condition=" '@(LocaleDirs)' != '' " />
+    <Copy SourceFiles="@(LocaleDirs->'$(TargetPath)')" DestinationFiles="@(LocaleDirs->'%(Identity)\$([System.IO.Path]::GetFileName($(TargetPath)))')" Condition="Exists('$(TargetPath)') And '@(LocaleDirs)' != ''" />
+  </Target>
 </Project>

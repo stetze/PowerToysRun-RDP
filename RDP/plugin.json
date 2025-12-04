@@ -4,10 +4,10 @@
   "Disabled": false,
   "IsGlobal": false,
   "Name": "RDP",
-  "Author": "anthony81799",
+  "Author": "stetze",
   "Version": "1.1.0",
   "Language": "csharp",
-  "Website": "https://github.com/anthony81799/PowerToysRun-RDP",
+  "Website": "https://github.com/stetze/PowerToysRun-RDP",
   "ExecuteFileName": "Community.PowerToys.Run.Plugin.RDP.dll",
   "IcoPathDark": "Images\\screen-mirroring.dark.png",
   "IcoPathLight": "Images\\screen-mirroring.light.png"
